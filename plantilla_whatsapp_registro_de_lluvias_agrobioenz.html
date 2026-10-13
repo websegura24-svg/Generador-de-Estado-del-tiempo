@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Estado - AGROBIOENZ</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas para la descarga de imagen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Panel de Controles (Formulario de Edición) -->
+        <div class="lg:col-span-5 bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-xl font-bold">
+                    <i class="fa-solid fa-cloud-rain"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white">AGROBIOENZ</h1>
+                    <p class="text-xs text-emerald-400 font-medium">Generador de Estado de Lluvias</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Fecha</label>
+                    <input type="text" id="input-fecha" value="Lunes, 12 de Octubre" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Ubicación / Establecimiento</label>
+                    <input type="text" id="input-ubicacion" value="Zona Norte - Santa Fe" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Lluvia de Hoy (mm)</label>
+                        <input type="text" id="input-hoy" value="10" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 font-bold text-emerald-400 text-lg">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Acumulado Mensual (mm)</label>
+                        <input type="text" id="input-acumulado" value="44" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 font-bold text-emerald-400 text-lg">
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-700">
+                    <button onclick="descargarImagen()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-download"></i> Descargar Estado para WhatsApp
+                    </button>
+                    <p class="text-[11px] text-slate-400 text-center mt-2">La imagen se descargará en alta definición con el formato exacto vertical (9:16) listo para estados.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-7 flex flex-col items-center justify-center">
+            <div class="text-sm font-medium text-slate-400 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-mobile-screen"></i> Vista Previa (Formato Historia 9:16)
+            </div>
+
+            <!-- Contenedor Plantilla Estado WhatsApp -->
+            <div id="capture-area" class="w-[360px] h-[640px] bg-white rounded-2xl overflow-hidden shadow-2xl relative flex flex-col justify-between border-4 border-slate-700 select-none">
+                
+                <!-- Fondo Imagen Campo con Overlay sutil -->
+                <div class="absolute inset-0 z-0">
+                    <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1080&auto=format&fit=crop" alt="Campo" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-b from-white/95 via-stone-900/40 to-white/95"></div>
+                </div>
+
+                <!-- Header: Logo y Marca -->
+                <div class="relative z-10 bg-white/90 backdrop-blur-md px-4 py-3 flex items-center justify-center gap-3 shadow-sm border-b border-emerald-100">
+                    <div class="w-10 h-10 rounded-full bg-emerald-700 flex items-center justify-center text-white shrink-0 overflow-hidden border border-emerald-500">
+                        <img src="1001022991.jpg" alt="Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/15803d/ffffff?text=AB'">
+                    </div>
+                    <div>
+                        <h2 class="text-emerald-950 font-black text-sm tracking-wide leading-none">AGROBIOENZ</h2>
+                        <p class="text-[9px] text-emerald-800 font-semibold italic mt-0.5">El poder de la naturaleza en tu campo</p>
+                    </div>
+                </div>
+
+                <div class="relative z-10 px-4 py-2 flex flex-col items-center justify-center my-auto">
+                    
+                    <h3 class="text-emerald-950 font-extrabold text-xl tracking-wide uppercase bg-white/80 px-4 py-1 rounded-full shadow-sm mb-4 border border-emerald-200">
+                        REGISTRO DE LLUVIAS
+                    </h3>
+
+                    <!-- Tarjetas de Datos de Lluvia -->
+                    <div class="w-full space-y-3">
+                        <!-- Lluvia Hoy -->
+                        <div class="bg-emerald-900/90 backdrop-blur-md p-4 rounded-xl border border-emerald-500/50 shadow-lg flex items-center justify-between text-white">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-700/80 flex items-center justify-center text-emerald-200 text-xl">
+                                    <i class="fa-solid fa-cloud-showers-heavy"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs uppercase tracking-wider text-emerald-200 font-medium block">Lluvia de Hoy</span>
+                                    <span id="preview-fecha" class="text-[11px] text-emerald-300">Lunes, 12 de Octubre</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="preview-hoy" class="text-3xl font-black text-emerald-300">10</span>
+                                <span class="text-xs font-bold text-emerald-300">mm</span>
+                            </div>
+                        </div>
+
+                        <!-- Acumulado Mensual -->
+                        <div class="bg-stone-900/90 backdrop-blur-md p-3.5 rounded-xl border border-stone-700 shadow-lg flex items-center justify-between text-white">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center text-amber-400 text-xl">
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs uppercase tracking-wider text-stone-300 font-medium block">Acumulado Mensual</span>
+                                    <span id="preview-ubicacion" class="text-[11px] text-stone-400 truncate max-w-[140px] block">Zona Norte - Santa Fe</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="preview-acumulado" class="text-2xl font-black text-amber-400">44</span>
+                                <span class="text-xs font-bold text-amber-400">mm</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="relative z-10 bg-white/95 backdrop-blur-md px-2 py-2.5 border-t border-emerald-100">
+                    <div class="grid grid-cols-4 gap-1 text-center">
+                        <!-- Producto 1 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-[10px] font-bold mb-1 shadow-sm">
+                                <i class="fa-solid fa-seedling"></i>
+                            </div>
+                            <h4 class="text-[9px] font-bold text-slate-900 leading-tight">Inoc. Semilla</h4>
+                            <p class="text-[7px] text-slate-600 leading-none mt-0.5">Gramíneas y Leguminosas</p>
+                        </div>
+                        <!-- Producto 2 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-[10px] font-bold mb-1 shadow-sm">
+                                <i class="fa-solid fa-box-archive"></i>
+                            </div>
+                            <h4 class="text-[9px] font-bold text-slate-900 leading-tight">Inoc. Silo</h4>
+                            <p class="text-[7px] text-slate-600 leading-none mt-0.5">Levaduras y Acéticas</p>
+                        </div>
+                        <!-- Producto 3 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-[10px] font-bold mb-1 shadow-sm">
+                                <i class="fa-solid fa-earth-americas"></i>
+                            </div>
+                            <h4 class="text-[9px] font-bold text-slate-900 leading-tight">Maxan</h4>
+                            <p class="text-[7px] text-slate-600 leading-none mt-0.5">Enmienda Orgánica</p>
+                        </div>
+                        <!-- Producto 4 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-[10px] font-bold mb-1 shadow-sm">
+                                <i class="fa-solid fa-flask"></i>
+                            </div>
+                            <h4 class="text-[9px] font-bold text-slate-900 leading-tight">Multienzimático</h4>
+                            <p class="text-[7px] text-slate-600 leading-none mt-0.5">Degrada Celulosa</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Sincronizar inputs con la vista previa en tiempo real
+        const inputFecha = document.getElementById('input-fecha');
+        const inputUbicacion = document.getElementById('input-ubicacion');
+        const inputHoy = document.getElementById('input-hoy');
+        const inputAcumulado = document.getElementById('input-acumulado');
+
+        const previewFecha = document.getElementById('preview-fecha');
+        const previewUbicacion = document.getElementById('preview-ubicacion');
+        const previewHoy = document.getElementById('preview-hoy');
+        const previewAcumulado = document.getElementById('preview-acumulado');
+
+        function actualizarVistaPrevia() {
+            previewFecha.textContent = inputFecha.value || 'Fecha';
+            previewUbicacion.textContent = inputUbicacion.value || 'Ubicación';
+            previewHoy.textContent = inputHoy.value || '0';
+            previewAcumulado.textContent = inputAcumulado.value || '0';
+        }
+
+        inputFecha.addEventListener('input', actualizarVistaPrevia);
+        inputUbicacion.addEventListener('input', actualizarVistaPrevia);
+        inputHoy.addEventListener('input', actualizarVistaPrevia);
+        inputAcumulado.addEventListener('input', actualizarVistaPrevia);
+
+        // Función para descargar el estado como imagen PNG
+        function descargarImagen() {
+            const captureElement = document.getElementById('capture-area');
+            
+            // Usamos html2canvas para renderizar la tarjeta en alta calidad
+            html2canvas(captureElement, {
+                scale: 3, // Alta definición para pantallas móviles
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'estado-lluvias-agrobioenz.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error("Error al generar la imagen:", err);
+                alert("Ocurrió un error al generar la imagen. Intenta nuevamente.");
+            });
+        }
+    </script>
+</body>
+</html>
